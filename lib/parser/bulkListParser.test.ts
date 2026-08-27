@@ -92,3 +92,66 @@ Arrival
     ]);
   });
 });
+
+describe("parseBulkList — Letterboxd CSV", () => {
+  const csv = `Date,Name,Year,Letterboxd URI
+2024-01-15,Interstellar,2014,https://boxd.it/abc
+2024-02-01,"Dune",2021,https://boxd.it/def
+2024-02-10,"Love, Death & Robots",2019,https://boxd.it/ghi
+2024-03-01,Parasite,,https://boxd.it/jkl`;
+
+  it("detects the CSV format and extracts names + years", () => {
+    const res = parseBulkList(csv);
+    expect(res.source).toBe("csv");
+    expect(res.items).toEqual([
+      { title: "Interstellar", normalized: "interstellar", year: 2014 },
+      { title: "Dune", normalized: "dune", year: 2021 },
+      { title: "Love, Death & Robots", normalized: "love death robots", year: 2019 },
+      { title: "Parasite", normalized: "parasite", year: undefined },
+    ]);
+  });
+
+  it("handles quoted fields with commas and escaped quotes", () => {
+    const tricky = `Name,Year
+"What's Up, Doc?",1972
+"The ""Best"" Movie",2000`;
+    const res = parseBulkList(tricky);
+    expect(res.items.map((i) => i.title)).toEqual(['What\'s Up, Doc?', 'The "Best" Movie']);
+  });
+
+  it("does not mistake a normal title containing a comma for CSV", () => {
+    const res = parseBulkList("I, Tonya\nLove, Actually");
+    expect(res.source).toBe("lines");
+    expect(res.items.map((i) => i.title)).toEqual(["I, Tonya", "Love, Actually"]);
+  });
+});
+
+describe("parseBulkList — MyAnimeList XML", () => {
+  const xml = `<?xml version="1.0" encoding="UTF-8" ?>
+<myanimelist>
+  <anime>
+    <series_animedb_id>5114</series_animedb_id>
+    <series_title><![CDATA[Fullmetal Alchemist: Brotherhood]]></series_title>
+  </anime>
+  <anime>
+    <series_title><![CDATA[Steins;Gate]]></series_title>
+  </anime>
+  <anime>
+    <series_title>Attack on Titan</series_title>
+  </anime>
+  <anime>
+    <series_title><![CDATA[Steins;Gate]]></series_title>
+  </anime>
+</myanimelist>`;
+
+  it("extracts series titles from CDATA and plain tags, deduping repeats", () => {
+    const res = parseBulkList(xml);
+    expect(res.source).toBe("mal-xml");
+    expect(res.items.map((i) => i.title)).toEqual([
+      "Fullmetal Alchemist: Brotherhood",
+      "Steins;Gate",
+      "Attack on Titan",
+    ]);
+    expect(res.duplicates).toHaveLength(1);
+  });
+});

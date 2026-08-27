@@ -15,7 +15,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { Textarea } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
-import { ArrowLeft, Check, Star } from "lucide-react";
+import { ArrowLeft, Check, Star, Upload } from "lucide-react";
 
 type Step = "paste" | "review" | "match" | "saving" | "done";
 
@@ -101,8 +101,19 @@ export function ImportWizard({
         `/api/tmdb/search?q=${encodeURIComponent(state.parsed.title)}&type=${type}`
       );
       if (!res.ok) throw new Error();
-      const { results } = (await res.json()) as { results: TmdbSearchResult[] };
-      if (results.length === 0) return { ...state, status: "unmatched" };
+      const { results: all } = (await res.json()) as { results: TmdbSearchResult[] };
+      if (all.length === 0) return { ...state, status: "unmatched" };
+
+      // A source year (e.g. Letterboxd CSV) narrows the candidates and
+      // auto-resolves titles with many versions ("Dune", "Parasite").
+      const sourceYear = state.parsed.year;
+      const inYear = sourceYear
+        ? all.filter((r) => {
+            const y = Number(r.release_date?.slice(0, 4));
+            return Number.isInteger(y) && Math.abs(y - sourceYear) <= 1;
+          })
+        : [];
+      const results = inYear.length > 0 ? inYear : all;
 
       const exact = results.filter(
         (r) => normalizeTitle(r.title) === state.parsed.normalized
@@ -180,7 +191,8 @@ export function ImportWizard({
           <div>
             <h1 className="text-xl font-extrabold">Import a list</h1>
             <p className="text-sm text-muted-foreground">
-              Paste anything — bullets, numbers, quotes, mess. We&apos;ll clean it up.
+              Paste anything — bullets, numbers, quotes, mess. Letterboxd CSV
+              and MyAnimeList XML exports work too. We&apos;ll clean it up.
             </p>
           </div>
 
@@ -215,6 +227,25 @@ export function ImportWizard({
             autoFocus
             className="font-mono text-sm"
           />
+          <label
+            className={cn(
+              buttonVariants({ variant: "outline", size: "md", full: true }),
+              "cursor-pointer"
+            )}
+          >
+            <Upload className="size-4" /> Upload a file (.csv / .xml / .txt)
+            <input
+              type="file"
+              accept=".csv,.xml,.txt,text/csv,text/xml,text/plain"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                setText(await file.text());
+                e.target.value = "";
+              }}
+            />
+          </label>
           <Button size="lg" onClick={parse} disabled={!text.trim()}>
             Clean up my list ✨
           </Button>
@@ -261,6 +292,9 @@ export function ImportWizard({
                       </span>
                       <span className={cn("truncate font-semibold", !on && "text-muted-foreground line-through")}>
                         {p.title}
+                        {p.year ? (
+                          <span className="ml-1.5 font-normal text-muted-foreground">({p.year})</span>
+                        ) : null}
                       </span>
                     </button>
                   </li>
