@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+:root {
+  --background: #faf8f5;
+  --foreground: #1c1917;
+  --card: #ffffff;
+  --card-foreground: #1c1917;
+  --muted: #f1ede8;
+  --muted-foreground: #78716c;
+  --border: #e7e0d8;
+  --primary: #f5484d;
+  --primary-2: #ff7849;
+  --primary-foreground: #ffffff;
+  --accent: #7c5cfc;
+  --accent-foreground: #ffffff;
+  --success: #16a34a;
+  --ring: #f5484d;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #12100e;
+    --foreground: #f5f2ee;
+    --card: #1c1917;
+    --card-foreground: #f5f2ee;
+    --muted: #29241f;
+    --muted-foreground: #a8a29e;
+    --border: #322c26;
+    --primary: #f5484d;
+    --primary-2: #ff7849;
+    --primary-foreground: #ffffff;
+    --accent: #8e70ff;
+    --accent-foreground: #ffffff;
+    --success: #4ade80;
+    --ring: #f5484d;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-2: var(--primary-2);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-success: var(--success);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+  --radius-3xl: 1.75rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Soft playful selection color */
+::selection {
+  background: color-mix(in srgb, var(--primary) 25%, transparent);
+}
+
+/* Utility: gradient text for hero moments */
+.text-gradient {
+  background: linear-gradient(100deg, var(--primary), var(--primary-2) 55%, var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bg-gradient-brand {
+  background: linear-gradient(115deg, var(--primary), var(--primary-2));
+}
+
+/* Hide scrollbars on horizontal chip rows without killing scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
