@@ -9,7 +9,8 @@ export async function GET(request: NextRequest) {
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next") ?? "/home";
 
-  const redirectTo = new URL(next.startsWith("/") ? next : "/home", request.url);
+  const safeNext = next.startsWith("/") && !next.startsWith("//") ? next : "/home";
+  const redirectTo = new URL(safeNext, request.url);
 
   if (token_hash && type) {
     const supabase = await createClient();

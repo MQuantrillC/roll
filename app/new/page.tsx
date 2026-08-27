@@ -87,7 +87,7 @@ export default function NewGroupPage() {
         {error && <p className="text-sm font-medium text-red-500">{error}</p>}
 
         <Button type="submit" size="xl" full disabled={busy || !name.trim()}>
-          {busy ? <Spinner /> : "Create group 🎉"}
+          {busy ? <Spinner /> : "Create group"}
         </Button>
       </form>
     </main>

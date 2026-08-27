@@ -8,13 +8,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
+import { Wordmark } from "@/components/brand";
 
 type Mode = "signin" | "signup";
 
 export function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
-  const next = params.get("next") ?? "/home";
+  // Only ever redirect within the app — never to an external URL.
+  const rawNext = params.get("next") ?? "/home";
+  const next = rawNext.startsWith("/") && !rawNext.startsWith("//") ? rawNext : "/home";
   const [mode, setMode] = useState<Mode>(params.get("mode") === "signup" ? "signup" : "signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -79,8 +82,8 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-sm">
       <CardContent className="flex flex-col gap-4 p-6">
-        <Link href="/" className="text-center text-2xl font-extrabold">
-          🎲 <span className="text-gradient">Roll</span>
+        <Link href="/" className="flex justify-center">
+          <Wordmark className="text-2xl" markClassName="size-8" />
         </Link>
 
         <div className="grid grid-cols-2 rounded-2xl bg-muted p-1 text-sm font-semibold">
@@ -140,7 +143,7 @@ export function LoginForm() {
         </div>
 
         <Button variant="outline" full onClick={magicLink} disabled={busy}>
-          ✨ Email me a magic link
+          Email me a magic link
         </Button>
       </CardContent>
     </Card>

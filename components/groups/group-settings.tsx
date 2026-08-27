@@ -80,9 +80,24 @@ export function GroupSettingsForm({
   async function leaveGroup() {
     const mine = members.find((m) => m.userId === userId);
     if (!mine) return;
+    if (!window.confirm("Leave this group? You can rejoin later with the code.")) return;
     const supabase = createClient();
     const { error } = await supabase.from("group_members").delete().eq("id", mine.memberId);
     if (!error) router.push("/home");
+  }
+
+  async function deleteGroup() {
+    if (
+      !window.confirm(
+        "Delete this group for everyone? All lists and history go with it. This cannot be undone."
+      )
+    ) {
+      return;
+    }
+    const supabase = createClient();
+    const { error } = await supabase.from("groups").delete().eq("id", groupId);
+    if (!error) router.push("/home");
+    else setMsg("Couldn't delete the group. Try again.");
   }
 
   return (
@@ -216,9 +231,15 @@ export function GroupSettingsForm({
         </CardContent>
       </Card>
 
-      <Button variant="destructive" onClick={leaveGroup}>
-        Leave group
-      </Button>
+      {isAdmin ? (
+        <Button variant="destructive" onClick={deleteGroup}>
+          Delete group
+        </Button>
+      ) : (
+        <Button variant="destructive" onClick={leaveGroup}>
+          Leave group
+        </Button>
+      )}
     </main>
   );
 }

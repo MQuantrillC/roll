@@ -362,13 +362,13 @@ export function DecideFlow({
             </div>
 
             <Button size="xl" full onClick={begin}>
-              Start {MODES.find((m) => m.value === mode)?.emoji}
+              Start
             </Button>
           </StepShell>
         )}
 
         {step === "guard" && (
-          <StepShell key="guard" title="Not enough new options 😅">
+          <StepShell key="guard" title="Not enough new options">
             <p className="text-muted-foreground">
               After excluding recent picks{excludeDone ? " and watched items" : ""}, only{" "}
               {totalAvailable} {totalAvailable === 1 ? "option is" : "options are"} left.

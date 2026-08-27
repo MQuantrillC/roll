@@ -9,7 +9,7 @@ import { deleteItem, setItemStatus } from "@/lib/items";
 import { Button } from "@/components/ui/button";
 import { buttonVariants } from "@/components/ui/button-variants";
 import { EmptyState } from "@/components/ui/empty-state";
-import { Poster, TYPE_EMOJI } from "@/components/items/poster";
+import { Poster, TYPE_LABEL } from "@/components/items/poster";
 import { releaseYear } from "@/lib/tmdb/types";
 import { AddItems } from "@/components/list/add-items";
 import { cn } from "@/lib/utils";
@@ -169,9 +169,9 @@ export function MyList({
                     {item.title}
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>{TYPE_EMOJI[item.type]}</span>
+                    <span>{TYPE_LABEL[item.type]}</span>
                     {releaseYear(item.metadata?.release_date) && (
-                      <span>{releaseYear(item.metadata?.release_date)}</span>
+                      <span>· {releaseYear(item.metadata?.release_date)}</span>
                     )}
                     {item.metadata?.vote_average ? (
                       <span className="inline-flex items-center gap-0.5">

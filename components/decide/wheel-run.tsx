@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import gsap from "gsap";
 import { motion } from "motion/react";
-import type { Item } from "@/lib/types";
+import { canonicalKey, type Item } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 
 const WHEEL_MAX = 16;
@@ -59,9 +59,13 @@ function Wheel({ pool, winner, onDone }: { pool: Item[]; winner: Item; onDone: (
     doneRef.current = onDone;
   });
 
+  // Match by canonical identity, not row id: the winner and the pool's
+  // deduped representative can be different members' copies of the same
+  // movie, and the wheel must land on the segment the reveal will show.
+  const winnerKey = canonicalKey(winner);
   const winnerIndex = Math.max(
     0,
-    pool.findIndex((p) => p.id === winner.id)
+    pool.findIndex((p) => canonicalKey(p) === winnerKey)
   );
   const seg = 360 / pool.length;
 

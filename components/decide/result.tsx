@@ -10,7 +10,7 @@ import { buttonVariants } from "@/components/ui/button-variants";
 import { Poster } from "@/components/items/poster";
 import { releaseYear } from "@/lib/tmdb/types";
 import { MODE_LABEL } from "@/components/decide/decide-flow";
-import { cn } from "@/lib/utils";
+import { cn, safeHttpUrl } from "@/lib/utils";
 import { ExternalLink, MapPin, RotateCcw, Star } from "lucide-react";
 
 const CONFETTI = ["🎉", "🎊", "✨", "🍿", "🎬", "⭐"];
@@ -155,9 +155,9 @@ export function ResultScreen({
             <MapPin className="size-4" /> Open in Maps
           </a>
         )}
-        {winner.metadata?.url && (
+        {safeHttpUrl(winner.metadata?.url) && (
           <a
-            href={winner.metadata.url}
+            href={safeHttpUrl(winner.metadata?.url)!}
             target="_blank"
             rel="noopener noreferrer"
             className={cn(buttonVariants({ variant: "ghost", size: "lg", full: true }))}

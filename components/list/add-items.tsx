@@ -8,7 +8,7 @@ import { addTextItem, addTmdbItem } from "@/lib/items";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { cn } from "@/lib/utils";
+import { cn, safeHttpUrl } from "@/lib/utils";
 import { Check, Star } from "lucide-react";
 
 type Tab = "screen" | "food";
@@ -206,7 +206,7 @@ function RestaurantForm({
     try {
       const res = await addTextItem(groupId, userId, type, name, {
         address: address.trim() || undefined,
-        url: url.trim() || undefined,
+        url: safeHttpUrl(url) ?? undefined,
       });
       if (res.duplicate) {
         setMsg("Already on your list 👍");

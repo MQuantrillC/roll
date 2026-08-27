@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getGroupContext, getGroupItems } from "@/lib/groups";
+import { getGroupContext, getGroupItemOwners } from "@/lib/groups";
 import { ShareCode } from "@/components/groups/share-code";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,14 +10,14 @@ import { Dices, Plus } from "lucide-react";
 
 export default async function GroupDashboard({ params }: PageProps<"/g/[id]">) {
   const { id } = await params;
-  const [{ group, members, userId }, items] = await Promise.all([
+  const [{ group, members, userId }, itemOwners] = await Promise.all([
     getGroupContext(id),
-    getGroupItems(id),
+    getGroupItemOwners(id),
   ]);
 
   const countByOwner = new Map<string, number>();
-  for (const item of items) {
-    countByOwner.set(item.owner_id, (countByOwner.get(item.owner_id) ?? 0) + 1);
+  for (const owner of itemOwners) {
+    countByOwner.set(owner, (countByOwner.get(owner) ?? 0) + 1);
   }
 
   const sortedMembers = [...members].sort((a, b) =>
@@ -86,7 +86,7 @@ export default async function GroupDashboard({ params }: PageProps<"/g/[id]">) {
         </div>
       </section>
 
-      {items.length === 0 && (
+      {itemOwners.length === 0 && (
         <EmptyState
           emoji="🍿"
           title="Your group is empty"

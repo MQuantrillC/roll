@@ -247,7 +247,7 @@ export function ImportWizard({
             />
           </label>
           <Button size="lg" onClick={parse} disabled={!text.trim()}>
-            Clean up my list ✨
+            Clean up my list
           </Button>
         </>
       )}
@@ -307,7 +307,7 @@ export function ImportWizard({
             {isScreen ? (
               <>
                 <Button size="lg" onClick={startMatching} disabled={selected.length === 0}>
-                  Match {selected.length} with TMDB 🔍
+                  Match {selected.length} with TMDB
                 </Button>
                 <Button variant="ghost" onClick={saveWithoutMatching} disabled={selected.length === 0}>
                   Skip matching — add as plain text
