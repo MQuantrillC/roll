@@ -12,6 +12,8 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Poster, TYPE_LABEL } from "@/components/items/poster";
 import { releaseYear } from "@/lib/tmdb/types";
 import { AddItems } from "@/components/list/add-items";
+import { MatchStatus } from "@/components/list/match-status";
+import { useMatchQueue } from "@/lib/hooks/useMatchQueue";
 import { cn } from "@/lib/utils";
 import { Check, FileText, Plus, Star, Trash2, Undo2 } from "lucide-react";
 
@@ -37,6 +39,9 @@ export function MyList({
   const [items, setItems] = useState<Item[]>(initialItems);
   const [filter, setFilter] = useState<ItemType | "all">("all");
   const [adding, setAdding] = useState(params.get("add") === "1");
+
+  // Resume any background TMDB matching left over from an import.
+  useMatchQueue(items, userId, setItems);
 
   const visible = useMemo(
     () =>
@@ -107,6 +112,8 @@ export function MyList({
         )}
       </AnimatePresence>
 
+      <MatchStatus items={items} setItems={setItems} />
+
       <div className="no-scrollbar flex gap-2 overflow-x-auto">
         {FILTERS.map((f) => (
           <button
@@ -170,6 +177,12 @@ export function MyList({
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{TYPE_LABEL[item.type]}</span>
+                    {item.metadata?.match?.status === "pending" && (
+                      <span className="italic">· matching…</span>
+                    )}
+                    {item.metadata?.match?.status === "review" && (
+                      <span className="font-semibold text-primary">· needs your pick</span>
+                    )}
                     {releaseYear(item.metadata?.release_date) && (
                       <span>· {releaseYear(item.metadata?.release_date)}</span>
                     )}

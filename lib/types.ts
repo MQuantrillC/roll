@@ -38,7 +38,25 @@ export interface GroupMember {
   profile?: Profile;
 }
 
+/**
+ * Background TMDB matching state, persisted on the item so an import
+ * can save instantly as plain text and be enriched later — from any
+ * page, surviving refreshes and navigation.
+ *
+ * - "pending": not yet looked up; any client showing the list works the queue.
+ * - "review": lookup found several plausible versions; the owner picks one
+ *   (or keeps it as text). Absent once resolved.
+ */
+export interface MatchState {
+  status: "pending" | "review";
+  /** Release-year hint from the source (e.g. Letterboxd CSV). */
+  year?: number;
+  /** Candidate matches awaiting the owner's pick (status "review"). */
+  options?: import("@/lib/tmdb/types").TmdbSearchResult[];
+}
+
 export interface ItemMetadata {
+  match?: MatchState;
   // TMDB enrichment (movies / series)
   tmdb_id?: number;
   original_title?: string;
